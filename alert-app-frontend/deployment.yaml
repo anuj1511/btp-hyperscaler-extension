@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-app-frontend
+  labels:
+    app: alert-app-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-app-frontend
+  template:
+    metadata:
+      labels:
+        app: alert-app-frontend
+    spec:
+      containers:
+        - name: alert-app-frontend
+          image: anujjadhav0215/alert-app-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-app-frontend
+  labels:
+    app: alert-app-frontend
+spec:
+  ports:
+    - name: http
+      port: 80
+  selector:
+    app: alert-app-frontend
+---
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: alert-app-frontend
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  host: alert-app-frontend 
+  service:
+    name: alert-app-frontend
+    port: 80
+  rules:
+    - path: /.*
+      accessStrategies:
+        - config: {}
+          handler: noop
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE

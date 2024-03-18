@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-log-app
+  labels:
+    app: audit-log-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audit-log-app
+  template:
+    metadata:
+      labels:
+        app: audit-log-app
+    spec:
+      containers:
+        - name: audit-log-app
+          image: anujjadhav0215/audit-log-app:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-log-app
+  labels:
+    app: audit-log-app
+spec:
+  ports:
+    - name: http
+      port: 3000
+  selector:
+    app: audit-log-app
+---
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: audit-log-app
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  host: audit-log-app 
+  service:
+    name: audit-log-app
+    port: 3000
+  rules:
+    - path: /.*
+      accessStrategies:
+        - config: {}
+          handler: noop
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
