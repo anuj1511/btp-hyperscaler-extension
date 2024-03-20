@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-app
+  name: crud-app-backend
   labels:
-    app: alert-app
+    app: crud-app-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alert-app
+      app: crud-app-backend
   template:
     metadata:
       labels:
-        app: alert-app
+        app: crud-app-backend
     spec:
       containers:
-        - name: alert-app
-          image: anujjadhav0215/alert-app:latest
+        - name: crud-app-backend
+          image: anujjadhav0215/crud-app-backend:latest
           imagePullPolicy: Always
           ports:
             - name: http
@@ -25,25 +25,25 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: alert-app
+  name: crud-app-backend
   labels:
-    app: alert-app
+    app: crud-app-backend
 spec:
   ports:
     - name: http
       port: 3000
   selector:
-    app: alert-app
+    app: crud-app-backend
 ---
 apiVersion: gateway.kyma-project.io/v1beta1
 kind: APIRule
 metadata:
-  name: alert-app
+  name: crud-app-backend
 spec:
   gateway: kyma-gateway.kyma-system.svc.cluster.local
-  host: alert-app 
+  host: crud-app-backend 
   service:
-    name: alert-app
+    name: crud-app-backend
     port: 3000
   rules:
     - path: /.*

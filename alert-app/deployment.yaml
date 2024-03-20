@@ -1,52 +1,52 @@
-#  The container runs the "alert-app" service on port 3000 and uses the Docker image "anujjadhav0215/alert-app:latest"
+#  The container runs the "alert-app-backend" service on port 3000 and uses the Docker image "anujjadhav0215/alert-app-backend:latest"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-app
+  name: alert-app-backend
   labels:
-    app: alert-app
+    app: alert-app-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alert-app
+      app: alert-app-backend
   template:
     metadata:
       labels:
-        app: alert-app
+        app: alert-app-backend
     spec:
       containers:
-        - name: alert-app
-          image: anujjadhav0215/alert-app:latest
+        - name: alert-app-backend
+          image: anujjadhav0215/alert-app-backend:latest
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
 ---
-# This Service enables communication with Pods running the "alert-app" application within the Kubernetes cluster.
+# This Service enables communication with Pods running the "alert-app-backend" application within the Kubernetes cluster.
 apiVersion: v1
 kind: Service
 metadata:
-  name: alert-app
+  name: alert-app-backend
   labels:
-    app: alert-app
+    app: alert-app-backend
 spec:
   ports:
     - name: http
       port: 3000
   selector:
-    app: alert-app
+    app: alert-app-backend
 ---
-# this APIRule configuration defines rules for routing incoming requests to the "alert-app" service running on port 3000, using the Kyma gateway.
+# this APIRule configuration defines rules for routing incoming requests to the "alert-app-backend" service running on port 3000, using the Kyma gateway.
 apiVersion: gateway.kyma-project.io/v1beta1
 kind: APIRule
 metadata:
-  name: alert-app
+  name: alert-app-backend
 spec:
   gateway: kyma-gateway.kyma-system.svc.cluster.local
-  host: alert-app 
+  host: alert-app-backend 
   service:
-    name: alert-app
+    name: alert-app-backend
     port: 3000
   rules:
     - path: /.*
