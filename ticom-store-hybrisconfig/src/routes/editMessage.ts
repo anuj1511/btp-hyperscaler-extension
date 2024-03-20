@@ -1,34 +1,27 @@
 import express, { Request, Response } from 'express';
-import { promises as fsPromises } from 'fs';
-const MESSAGE_FILE_PATH: string = "src/database/messages.json";
+import UserModel from '../models/UserModel';
 
 const router = express.Router();
 
-router.put("/", async (req: Request, res: Response) => {
-    console.log("edit called")
+router.put("/:id", async (req: Request, res: Response) => {
     try {
-        console.log(req.body.body);
-        const { index, updatedMessage } = req.body.body;
-        console.log(index, updatedMessage);
+      const messageId = req.params.id;
+  
+      const updatedMessage = await UserModel.findByIdAndUpdate(
+        messageId,
+        req.body,
+        { new: true }
+      );
 
-        let data = await fsPromises.readFile(MESSAGE_FILE_PATH, 'utf8');
-        const jsonData = JSON.parse(data);
+      if (!updatedMessage) {
+        return res.status(404).json({ message: 'Message not found.' });
+      }
 
-        if(index <  0 || index >= jsonData.length) {
-            return res.status(400).json({ message: 'Invalid Index!' });
-        }
-
-        jsonData[index] = updatedMessage;
-
-        data = JSON.stringify(jsonData, null,   2);
-
-        await fsPromises.writeFile(MESSAGE_FILE_PATH, data);
-
-        res.status(200).json({ message: 'Successfully edited message.', data: updatedMessage });
+      res.status(200).json({ message: 'Message successfully updated.', updatedMessage });
     } catch (err) {
-        console.error(`Error updating JSON file: ${err}`);
-        res.status(500).json({ message: 'Failed to edit message due to an internal server error.' });
+      console.error(`Error updating message: ${err}`);
+      res.status(500).json({ message: 'Failed to update message due to an internal server error.' });
     }
-});
-
+  });
+  
 export default router;

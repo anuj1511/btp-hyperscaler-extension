@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-app-backend
+  labels:
+    app: crud-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crud-app-backend
+  template:
+    metadata:
+      labels:
+        app: crud-app-backend
+    spec:
+      containers:
+        - name: crud-app-backend
+          image: anujjadhav0215/crud-app-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crud-app-backend
+  labels:
+    app: crud-app-backend
+spec:
+  ports:
+    - name: http
+      port: 3000
+  selector:
+    app: crud-app-backend
+---
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: crud-app-backend
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  host: crud-app-backend 
+  service:
+    name: crud-app-backend
+    port: 3000
+  rules:
+    - path: /.*
+      accessStrategies:
+        - config: {}
+          handler: noop
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE

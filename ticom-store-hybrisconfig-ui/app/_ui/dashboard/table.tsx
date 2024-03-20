@@ -60,7 +60,7 @@ export default function Table(props: any) {
                       <button
                         type="button"
                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-900 rounded-e-lg bg-gray-900 text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700"
-                        onClick={() => handleDelete(idx)}
+                        onClick={() => handleDelete(value._id)}
                       >
                         <DeleteIcon />
                       </button>

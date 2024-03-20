@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --env-file=.env --exit-child src/server.ts",
+    "dev": "ts-node-dev --exit-child src/server.ts",
     "start": "ts-node src/server.ts",
     "lint": "eslint . --ext .ts",
     "test": "jest"
@@ -13,8 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.4",
-    "express": "^4.18.2"
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "mongoose": "^8.2.2",
+    "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.3",

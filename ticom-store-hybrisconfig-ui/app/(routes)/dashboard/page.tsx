@@ -32,8 +32,10 @@ export default function Home() {
   const handleClose = () => setOpen(false);
 
   const fetchData = async () => {
+    console.log("called fetchData")
     try {
       const result = await fetchTableData();
+      console.log("get data: ", result);
       setData(result);
     } catch (error) {
       console.error(error);
@@ -50,8 +52,9 @@ export default function Home() {
   };
 
   const getUpdatedData = (details: Details) => {
+    console.log(details)
     editData({
-      index: editRow,
+      id: details._id,
       updatedMessage: details,
     })
       .then(() => {
@@ -63,12 +66,8 @@ export default function Home() {
       });
   };
 
-  const handleDelete = (idx: number) => {
-    const body = {
-      index: idx,
-    };
-    console.log(idx)
-    deleteData(body)
+  const handleDelete = (id: string) => {
+    deleteData(id)
       .then(() => {
         fetchData();
       })

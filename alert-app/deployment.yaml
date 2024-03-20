@@ -1,3 +1,4 @@
+#  The container runs the "alert-app" service on port 3000 and uses the Docker image "anujjadhav0215/alert-app:latest"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +23,7 @@ spec:
             - name: http
               containerPort: 3000
 ---
+# This Service enables communication with Pods running the "alert-app" application within the Kubernetes cluster.
 apiVersion: v1
 kind: Service
 metadata:
@@ -35,6 +37,7 @@ spec:
   selector:
     app: alert-app
 ---
+# this APIRule configuration defines rules for routing incoming requests to the "alert-app" service running on port 3000, using the Kyma gateway.
 apiVersion: gateway.kyma-project.io/v1beta1
 kind: APIRule
 metadata:

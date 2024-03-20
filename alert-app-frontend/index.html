@@ -3,24 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alert Sender</title>
+<title>Send Alert</title>
 <style>
     body {
         font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
     }
     .container {
         max-width: 600px;
         margin: 0 auto;
         padding: 20px;
+        background-color: #fff;
         border: 1px solid #ccc;
         border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     }
+    h2 {
+        text-align: center;
+    }
+    form {
+        margin-top: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+    }
+    select,
     input[type="text"],
     input[type="number"],
     textarea {
         width: 100%;
         padding: 8px;
-        margin: 6px 0;
+        margin-bottom: 12px;
         box-sizing: border-box;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -32,16 +47,32 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        display: block;
+        margin: 0 auto;
     }
     input[type="submit"]:hover {
         background-color: #45a049;
+    }
+    .hidden {
+        display: none;
+    }
+    .btn {
+        background-color: #d0421e;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: block;
+        margin: 1 auto;
+
     }
 </style>
 </head>
 <body>
 <div class="container">
-    <h2>Send Alert</h2>
-    <form id="alertForm">
+    <form id="alertForm" class="hidden">
+        <h2>Send Alert</h2>
         <label for="body">Body:</label>
         <textarea id="body" name="body" rows="4" placeholder="Test body"></textarea>
 
@@ -49,31 +80,79 @@
         <input type="text" id="subject" name="subject" value="test-resource exceeds CPU limits">
 
         <label for="eventType">Event Type:</label>
-        <input type="text" id="eventType" name="eventType" value="HighCpu">
+        <select id="eventType" name="eventType">
+            <option value="HighCpu">HighCpu</option>
+            <option value="Test">Test</option>
+        </select>
 
-        <label for="resourceName">Resource Name:</label>
-        <input type="text" id="resourceName" name="resourceName" value="test-resource">
+        <label for="resourceName" class="hidden">Resource Name:</label>
+        <input type="text" id="resourceName" name="resourceName" value="test-resource" class="hidden">
 
-        <label for="resourceType">Resource Type:</label>
-        <input type="text" id="resourceType" name="resourceType" value="application">
+        <label for="resourceType" class="hidden">Resource Type:</label>
+        <input type="text" id="resourceType" name="resourceType" value="application" class="hidden">
 
-        <label for="resourceInstance">Resource Instance:</label>
-        <input type="text" id="resourceInstance" name="resourceInstance" value="123456">
+        <label for="resourceInstance" class="hidden">Resource Instance:</label>
+        <input type="text" id="resourceInstance" name="resourceInstance" value="123456" class="hidden">
 
-        <label for="detailsLink">Details Link:</label>
-        <input type="text" id="detailsLink" name="detailsLink" value="https://example.details.com">
+        <label for="detailsLink" class="hidden">Details Link:</label>
+        <input type="text" id="detailsLink" name="detailsLink" value="https://example.details.com" class="hidden">
 
-        <label for="eventTimestamp">Event Timestamp:</label>
-        <input type="number" id="eventTimestamp" name="eventTimestamp" value="1602787032">
+        <label for="eventTimestamp" class="hidden">Event Timestamp:</label>
+        <input type="number" id="eventTimestamp" name="eventTimestamp" value="1602787032" class="hidden">
 
-        <label for="priority">Priority:</label>
-        <input type="number" id="priority" name="priority" value="1">
+        <label for="priority" class="hidden">Priority:</label>
+        <input type="number" id="priority" name="priority" value="1" class="hidden">
 
         <input type="submit" value="Send Alert">
+        <button class="btn" id="logoutBtn">logout</button>
+
+    </form>
+
+    <form id="loginForm">
+        <h2>Login</h2>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <input type="submit" value="Login">
     </form>
 </div>
 
 <script>
+    const baseUrl = "https://fictional-adventure-6pr9xqrwr4jcjqp-3000.app.github.dev";
+
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // Send login request
+        fetch(`${baseUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to login');
+            }
+            // Store login state in localStorage
+            localStorage.setItem('loggedIn', 'true');
+            // Show the alert form
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('alertForm').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error during login:', error);
+            alert('Failed to login');
+        });
+    });
+
     document.getElementById("alertForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -93,9 +172,8 @@
             priority: parseInt(document.getElementById("priority").value)
         };
 
-        console.log(requestBody)
-
-        fetch('https://alert-app.c-6826c17.kyma.ondemand.com/sendAlert', {
+        // Send alert request
+        fetch(`${baseUrl}/sendAlert`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -116,6 +194,40 @@
             alert('Failed to send alert');
         });
     });
+
+    // Check if user is already logged in
+    if (localStorage.getItem('loggedIn') === 'true') {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('alertForm').style.display = 'block';
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", function(event) {
+        event.preventDefault();
+        
+        fetch(`${baseUrl}/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: ""
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to logout');
+            }
+            alert("Successfully logged out");
+
+            // Remove the localStorage key
+            localStorage.removeItem('loggedIn');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('alertForm').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('Failed to logout');
+        });
+    });
 </script>
+
+
 </body>
 </html>

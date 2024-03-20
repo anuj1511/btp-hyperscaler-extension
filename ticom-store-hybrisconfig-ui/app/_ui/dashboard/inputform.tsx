@@ -13,6 +13,7 @@ export default function InputForm(props: InputFormProps) {
     firstName: "",
     lastName: "",
     phoneNo: "",
+    _id: ""
   });
   console.log(details);
 

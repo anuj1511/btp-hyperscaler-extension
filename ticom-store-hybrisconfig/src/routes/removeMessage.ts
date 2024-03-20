@@ -1,30 +1,26 @@
 import express, { Request, Response } from 'express';
-import { promises as fsPromises } from 'fs';
-const MESSAGE_FILE_PATH: string = "src/database/messages.json";
+import UserModel from '../models/UserModel';
+
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
-    try {
-        const index: number = req.body.body.index;
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const messageId = req.params.id;
 
-        let data = await fsPromises.readFile(MESSAGE_FILE_PATH, 'utf8');
-        const jsonData = JSON.parse(data);
+    console.log(messageId);
 
-        if(index < 0 || index >= jsonData.length) 
-            return res.status(500).json({ message: 'Invalid Index!' })
+    const deletedMessage = await UserModel.findByIdAndDelete(messageId);
 
-        const deleted = jsonData.splice(index, 1);
-
-        data = JSON.stringify(jsonData, null,  2);
-
-        await fsPromises.writeFile(MESSAGE_FILE_PATH, data);
-
-        res.status(200).json({ message: 'Successfully deleted message.' + JSON.stringify(deleted) });
-    } catch (err) {
-        console.error(`Error updating JSON file: ${err}`);
-        res.status(500).json({ message: 'Failed to post message due to an internal server error.' });
+    if (!deletedMessage) {
+      return res.status(404).json({ message: 'Message not found.' });
     }
+
+    res.status(200).json({ message: 'Message successfully deleted.', deletedMessage });
+  } catch (err) {
+    console.error(`Error deleting message: ${err}`);
+    res.status(500).json({ message: 'Failed to delete message due to an internal server error.' });
+  }
 });
 
 export default router;
