@@ -2,7 +2,7 @@ import { Details } from "./definitions";
 import { unstable_noStore as noStore } from "next/cache";
 import axios from 'axios';
 
-const baseUrl = "https://crud-app-backend.c-6826c17.kyma.ondemand.com";
+const baseUrl = "https://crud-app-backend.b377d1b.kyma.ondemand.com";
 
 // function to get data
 export const fetchTableData = async (): Promise<Details[]> => {

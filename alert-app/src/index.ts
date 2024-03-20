@@ -13,6 +13,7 @@ let client: any = null;
 
 // /login endpoint
 app.post('/login', async (req, res) => {
+    console.log("called")
     try {
 
         if (client) {

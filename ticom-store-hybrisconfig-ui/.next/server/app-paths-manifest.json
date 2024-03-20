@@ -1,3 +1,4 @@
 {
+  "/(routes)/page": "app/(routes)/page.js",
   "/(routes)/dashboard/page": "app/(routes)/dashboard/page.js"
 }
